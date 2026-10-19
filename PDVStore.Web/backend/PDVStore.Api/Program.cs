@@ -114,6 +114,10 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+// Proteção do login contra força bruta. Limites configuráveis para testes.
+var loginPermitLimit = builder.Configuration.GetValue("RateLimiting:LoginPermitLimit", 5);
+var globalPermitLimit = builder.Configuration.GetValue("RateLimiting:GlobalPermitLimit", 300);
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -123,18 +127,17 @@ builder.Services.AddRateLimiter(options =>
             context.Connection.RemoteIpAddress?.ToString() ?? "anonimo",
             _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 300,
+                PermitLimit = globalPermitLimit,
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
 
-    // Proteção específica do login contra tentativa de força bruta.
     options.AddPolicy("login", context =>
         RateLimitPartition.GetFixedWindowLimiter(
             context.Connection.RemoteIpAddress?.ToString() ?? "anonimo",
             _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 5,
+                PermitLimit = loginPermitLimit,
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));

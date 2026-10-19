@@ -28,9 +28,9 @@ public class ClienteService
 
         if (!string.IsNullOrWhiteSpace(query.Busca))
         {
-            var termo = query.Busca.Trim();
-            consulta = consulta.Where(c => c.Nome.Contains(termo) ||
-                                           (c.CpfCnpj != null && c.CpfCnpj.Contains(termo)));
+            var termo = query.Busca.Trim().ToLowerInvariant();
+            consulta = consulta.Where(c => c.Nome.ToLower().Contains(termo) ||
+                                           (c.CpfCnpj != null && c.CpfCnpj.ToLower().Contains(termo)));
         }
 
         var total = await consulta.CountAsync(cancellationToken);

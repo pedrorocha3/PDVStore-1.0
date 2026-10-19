@@ -27,9 +27,9 @@ public class FornecedorService
 
         if (!string.IsNullOrWhiteSpace(query.Busca))
         {
-            var termo = query.Busca.Trim();
-            consulta = consulta.Where(f => f.Nome.Contains(termo) ||
-                                           (f.Cnpj != null && f.Cnpj.Contains(termo)));
+            var termo = query.Busca.Trim().ToLowerInvariant();
+            consulta = consulta.Where(f => f.Nome.ToLower().Contains(termo) ||
+                                           (f.Cnpj != null && f.Cnpj.ToLower().Contains(termo)));
         }
 
         var total = await consulta.CountAsync(cancellationToken);

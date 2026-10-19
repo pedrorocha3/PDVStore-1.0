@@ -19,7 +19,7 @@ public class PagedResult<T>
 }
 
 /// <summary>Parâmetros comuns de paginação.</summary>
-public abstract class PaginacaoQuery
+public class PaginacaoQuery
 {
     private int _page = 1;
     private int _pageSize = 20;

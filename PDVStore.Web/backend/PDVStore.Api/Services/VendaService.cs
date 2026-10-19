@@ -199,13 +199,14 @@ public class VendaService
             });
         }
 
+        Cliente? clienteVenda = null;
         if (venda.ClienteId.HasValue &&
             venda.FormaPagamento.Equals("Fiado", StringComparison.OrdinalIgnoreCase))
         {
-            var cliente = await _context.Clientes
+            clienteVenda = await _context.Clientes
                 .FirstOrDefaultAsync(c => c.Id == venda.ClienteId.Value, cancellationToken);
-            if (cliente != null)
-                cliente.SaldoDevedor = Math.Max(0, cliente.SaldoDevedor - venda.ValorTotal);
+            if (clienteVenda != null)
+                clienteVenda.SaldoDevedor = Math.Max(0, clienteVenda.SaldoDevedor - venda.ValorTotal);
         }
 
         venda.Status = "Cancelada";
@@ -215,7 +216,7 @@ public class VendaService
         _logger.LogInformation("Venda {VendaId} cancelada por {UsuarioId}. Motivo informado: {Motivo}",
             venda.Id, _currentUser.Id, motivo ?? "(não informado)");
 
-        return MontarDto(venda, produtos, null);
+        return MontarDto(venda, produtos, clienteVenda);
     }
 
 

@@ -8,7 +8,7 @@ namespace PDVStore.Api.Controllers;
 
 [ApiController]
 [Route("api/clientes")]
-[Authorize(Policy = Policies.AdminOnly)]
+[Authorize]
 public class ClientesController : ControllerBase
 {
     private readonly ClienteService _clienteService;
@@ -18,6 +18,10 @@ public class ClientesController : ControllerBase
         _clienteService = clienteService;
     }
 
+    /// <summary>
+    /// Consulta de clientes. Liberada também ao Operador porque o PDV precisa
+    /// listar clientes para vendas fiadas (mesmo comportamento da tela Windows).
+    /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<ClienteDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<ClienteDto>>> Listar(
@@ -31,6 +35,7 @@ public class ClientesController : ControllerBase
         => Ok(await _clienteService.ObterPorIdAsync(id, cancellationToken));
 
     [HttpPost]
+    [Authorize(Policy = Policies.AdminOnly)]
     [ProducesResponseType(typeof(ClienteDto), StatusCodes.Status201Created)]
     public async Task<ActionResult<ClienteDto>> Criar(
         [FromBody] CriarClienteRequest request, CancellationToken cancellationToken)
@@ -40,6 +45,7 @@ public class ClientesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [ProducesResponseType(typeof(ClienteDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClienteDto>> Atualizar(
@@ -48,6 +54,7 @@ public class ClientesController : ControllerBase
 
     /// <summary>Ativa/desativa o cliente (soft delete), preservando histórico.</summary>
     [HttpPatch("{id:int}/status")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [ProducesResponseType(typeof(ClienteDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<ClienteDto>> Status(
         int id, [FromBody] StatusRequest request, CancellationToken cancellationToken)
@@ -55,6 +62,7 @@ public class ClientesController : ControllerBase
 
     /// <summary>Baixa de fiado: reduz o saldo devedor sem ficar negativo.</summary>
     [HttpPost("{id:int}/receber-fiado")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [ProducesResponseType(typeof(ClienteDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ClienteDto>> ReceberFiado(

@@ -29,9 +29,9 @@ public class ProdutoService
 
         if (!string.IsNullOrWhiteSpace(query.Busca))
         {
-            var termo = query.Busca.Trim();
-            consulta = consulta.Where(p => p.Nome.Contains(termo) ||
-                                           (p.CodigoBarras != null && p.CodigoBarras.Contains(termo)));
+            var termo = query.Busca.Trim().ToLowerInvariant();
+            consulta = consulta.Where(p => p.Nome.ToLower().Contains(termo) ||
+                                           (p.CodigoBarras != null && p.CodigoBarras.ToLower().Contains(termo)));
         }
 
         if (!string.IsNullOrWhiteSpace(query.Categoria))

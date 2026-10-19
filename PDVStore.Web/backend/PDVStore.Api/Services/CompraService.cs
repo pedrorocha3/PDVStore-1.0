@@ -154,7 +154,7 @@ public class CompraService
             .BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
 
         var compra = await _context.Compras
-            .Include(c => c.Itens)
+            .Include(c => c.Itens).ThenInclude(i => i.Produto)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
             ?? throw new NaoEncontradoException($"Compra {id} não encontrada.");
 
